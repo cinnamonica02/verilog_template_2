@@ -3,7 +3,7 @@
 
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles, ReadOnly, ReadWrite
+from cocotb.triggers import ClockCycles, Timer
 
 
 @cocotb.test()
@@ -24,11 +24,10 @@ async def test_project(dut):
     dut.rst_n.value = 1
 
     async def run_frame(samples, expected):
-        await ReadWrite()
         for sample in samples:
             dut.ui_in.value = sample & 0xFF
             await ClockCycles(dut.clk, 1)
-        await ReadOnly()
+            await Timer(1, unit="ns")
         assert dut.uo_out.value == expected & 0xFF
 
     dut._log.info("Test four-sample signed MAC")
