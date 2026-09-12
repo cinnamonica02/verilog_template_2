@@ -1,9 +1,9 @@
 # Tiny Tapeout project information
 project:
-  title:        "INT8 MAC Engine"      # Project title
+  title:        "2x2 INT8 Matrix Engine"      # Project title
   author:       "Maria Guevara"      # Your name
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  "1-tile saturating INT8 time-multiplexed MAC engine"      # One line description of what your project does
+  description:  "1-tile 2x2 signed INT8 matrix multiplication engine"      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
   clock_hz:     0       # Clock frequency in Hz (or 0 if not applicable)
 

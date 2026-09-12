@@ -46,13 +46,13 @@ INT8 tiles, with an INT32 accumulator and a defined output saturation rule.
 
 ## Host architecture
 
-The host path will grow in this order:
+The host path follows the full compiler architecture:
 
-1. Python reference model for the hardware contract.
-2. C++ instruction encoder and simulator runtime.
-3. Verilator-backed C++ adapter.
-4. JAX tracing/lowering for the supported operation subset.
-5. VLIW scheduling for memory, MXU, and vector operations.
+1. JAX Python program and graph extraction.
+2. HLO/MLIR lowering for the supported operation subset.
+3. TPU assembly and VLIW scheduling.
+4. C++ instruction encoder and runtime.
+5. Verilator-backed simulator adapter.
 6. PJRT integration.
 
 JAX provides the user-facing numerical program and graph extraction. It is not
@@ -60,8 +60,8 @@ required to run on a GPU; CPU execution is sufficient for reference results
 and frontend development. CUDA and Triton are intentionally not dependencies:
 the target is custom Verilog hardware rather than an NVIDIA GPU.
 
-The initial C++ compiler may accept only one operation. It must produce the
-same result as the reference model and RTL before adding more operations.
+Each stage must preserve the same result as the reference model and RTL before
+the next compiler layer is added.
 
 ## First vertical milestone
 
@@ -73,7 +73,7 @@ Given two small INT8 matrices:
 4. The test compares RTL output with the model.
 5. The test saves a waveform showing memory loads, computation, and completion.
 
-This milestone is complete before adding JAX or PJRT.
+This is the first hardware/compiler contract for the full architecture.
 
 ## Tiny Tapeout constraints
 
@@ -98,23 +98,22 @@ Priority cases are:
 The reference model is the executable specification until a formal or more
 complete verification flow is justified.
 
-## Explicit non-goals for the first milestone
+## Deferred layers
 
-- Full transformer support.
-- General HLO/MLIR compilation.
-- Performance optimization.
-- Physical multi-tile deployment.
-- Full PJRT compliance.
+- Full transformer support until the MXU contract is stable.
+- General HLO/MLIR coverage beyond the supported operation subset.
+- Performance optimization before correctness and waveforms are established.
+- Physical multi-tile deployment before the single-tile RTL contract is proven.
 
 These are planned extensions, not requirements for the first working vertical
 slice.
 
 ## Immediate implementation order
 
-1. Repair the existing Tiny Tapeout testbench/module-name mismatch.
-2. Specify and test the current MAC behavior.
-3. Add the Python reference model.
-4. Replace the fixed MAC interface with the smallest matrix-command interface.
-5. Add the C++ simulator adapter and instruction test.
-6. Add JAX tracing for that one supported matrix operation.
-7. Add PJRT only after direct JAX-to-simulator execution works.
+1. Preserve the passing Tiny Tapeout baseline and top-level interface.
+2. Define the 2x2 INT8 MXU and instruction/memory contract.
+3. Implement the functional MXU RTL and waveform tests.
+4. Build the Verilator C++ harness and instruction runner.
+5. Add the first VLIW instruction format for load and MXU execution.
+6. Lower one JAX operation through HLO/MLIR into those instructions.
+7. Add the PJRT runtime path.
