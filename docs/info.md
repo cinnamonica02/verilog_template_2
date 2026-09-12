@@ -1,20 +1,25 @@
-<!---
-
-This file is used to generate your project datasheet. Please fill in the information below and delete any unused
-sections.
-
-You can also include images in this folder and reference them in the markdown. Each image must be less than
-512 kb in size, and the combined size of all images must be less than 1 MB.
--->
-
 ## How it works
 
-Explain how your project works
+This project implements a four-tap signed INT8 multiply-accumulate engine.
+One signed INT8 sample is supplied on `ui_in` on each enabled rising edge of
+`clk`. Four consecutive samples are multiplied by the fixed weights
+`[12, -45, 88, -20]` and accumulated. The result is saturated to signed INT8
+and presented on `uo_out` after the fourth sample. Reset clears the accumulator
+and starts a new four-sample frame. The bidirectional pins are unused.
 
 ## How to test
 
-Explain how to use your project
+The RTL test uses cocotb and Icarus Verilog. From the repository root, install
+the Python environment and run the test with:
+
+```sh
+uv sync
+uv run make -C test -B
+```
+
+The test covers a normal signed MAC calculation and positive and negative
+saturation. The waveform is written to `test/tb.fst`.
 
 ## External hardware
 
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+None.
