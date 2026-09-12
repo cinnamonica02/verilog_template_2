@@ -5,15 +5,27 @@ See below to get started or for more information, check the [website](https://ti
 
 ## Setting up
 
-1. Edit [Makefile](Makefile) and modify `PROJECT_SOURCES` to point to your Verilog files.
-2. Edit [tb.v](tb.v) and replace `tt_um_example` with your module name.
+From the repository root, sync the RTL test environment:
+
+```sh
+uv sync
+```
+
+JAX is optional and CPU-only by default:
+
+```sh
+uv sync --extra jax
+```
+
+The simulator itself must also be installed separately. The Makefile expects
+Icarus Verilog by default.
 
 ## How to run
 
 To run the RTL simulation:
 
 ```sh
-make -B
+uv run make -B
 ```
 
 To run gatelevel simulation, first harden your project and copy `../runs/wokwi/results/final/verilog/gl/{your_module_name}.v` to `gate_level_netlist.v`.
@@ -21,13 +33,13 @@ To run gatelevel simulation, first harden your project and copy `../runs/wokwi/r
 Then run:
 
 ```sh
-make -B GATES=yes
+uv run make -B GATES=yes
 ```
 
 If you wish to save the waveform in VCD format instead of FST format, edit tb.v to use `$dumpfile("tb.vcd");` and then run:
 
 ```sh
-make -B FST=
+uv run make -B FST=
 ```
 
 This will generate `tb.vcd` instead of `tb.fst`.

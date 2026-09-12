@@ -21,55 +21,55 @@ module tt_um_bjarke_micro_mac (
     assign W[2] = 8'sd88;
     assign W[3] = -8'sd20;
 
-    // Execution Pipeline Registers
-    reg [1:0]        step;
-    reg signed [7:0] shift_reg [0:3];
-    reg signed [7:0] acc;
+    // One four-sample frame is accumulated over four enabled clock cycles.
+    reg [1:0]         step;
+    reg signed [17:0] acc;
 
-    assign uo_out = acc;
+    assign uo_out = acc[7:0];
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             step         <= 2'd0;
-            acc          <= 8'sd0;
-            shift_reg[0] <= 8'sd0; shift_reg[1] <= 8'sd0;
-            shift_reg[2] <= 8'sd0; shift_reg[3] <= 8'sd0;
+            acc          <= 18'sd0;
         end else if (ena) begin
-            shift_reg[0] <= $signed(ui_in);
-            shift_reg[1] <= shift_reg[0];
-            shift_reg[2] <= shift_reg[1];
-            shift_reg[3] <= shift_reg[2];
-
             case (step)
                 2'd0: begin
-                    acc  <= clamp($signed(ui_in) * W[0]);
+                    acc  <= multiply($signed(ui_in), W[0]);
                     step <= 2'd1;
                 end
                 2'd1: begin
-                    acc  <= clamp(acc + (shift_reg[1] * W[1]));
+                    acc  <= acc + multiply($signed(ui_in), W[1]);
                     step <= 2'd2;
                 end
                 2'd2: begin
-                    acc  <= clamp(acc + (shift_reg[2] * W[2]));
+                    acc  <= acc + multiply($signed(ui_in), W[2]);
                     step <= 2'd3;
                 end
                 2'd3: begin
-                    acc  <= clamp(acc + (shift_reg[3] * W[3]));
+                    acc  <= clamp(acc + multiply($signed(ui_in), W[3]));
                     step <= 2'd0;
                 end
             endcase
         end
     end
 
-    // Saturation Logic Function
-    function signed [7:0] clamp(input signed [15:0] val);
+    function signed [17:0] multiply(input signed [7:0] a, input signed [7:0] b);
+        reg signed [15:0] product;
         begin
-            if (val > 16'sd127)
-                clamp = 8'sd127;
-            else if (val < -16'sd128)
-                clamp = -8'sd128;
+            product = a * b;
+            multiply = product;
+        end
+    endfunction
+
+    // Saturation Logic Function
+    function signed [17:0] clamp(input signed [17:0] val);
+        begin
+            if (val > 18'sd127)
+                clamp = 18'sd127;
+            else if (val < -18'sd128)
+                clamp = -18'sd128;
             else
-                clamp = val[7:0];
+                clamp = val;
         end
     endfunction
 
