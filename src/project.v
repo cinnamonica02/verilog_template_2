@@ -3,7 +3,9 @@
 module tt_um_bjarke_micro_mac (
     input  wire [7:0] ui_in,
     output wire [7:0] uo_out,
+    /* verilator lint_off UNUSEDSIGNAL */
     input  wire [7:0] uio_in,
+    /* verilator lint_on UNUSEDSIGNAL */
     output wire [7:0] uio_out,
     output wire [7:0] uio_oe,
     input  wire       ena,
@@ -55,11 +57,15 @@ module tt_um_bjarke_micro_mac (
                         3'd1: a1 <= $signed(ui_in);
                         3'd2: a2 <= $signed(ui_in);
                         3'd3: a3 <= $signed(ui_in);
+                        default: begin
+                            state <= LOAD_A;
+                            index <= 3'd0;
+                        end
                     endcase
                     if (index == 3'd3) begin
                         state <= LOAD_B;
                         index <= 3'd0;
-                    end else begin
+                    end else if (index < 3'd3) begin
                         index <= index + 1'b1;
                     end
                 end
@@ -69,11 +75,15 @@ module tt_um_bjarke_micro_mac (
                         3'd1: b1 <= $signed(ui_in);
                         3'd2: b2 <= $signed(ui_in);
                         3'd3: b3 <= $signed(ui_in);
+                        default: begin
+                            state <= LOAD_A;
+                            index <= 3'd0;
+                        end
                     endcase
                     if (index == 3'd3) begin
                         state <= EXEC;
                         index <= 3'd0;
-                    end else begin
+                    end else if (index < 3'd3) begin
                         index <= index + 1'b1;
                     end
                 end
@@ -89,9 +99,13 @@ module tt_um_bjarke_micro_mac (
                     if (index == 3'd3) begin
                         state <= LOAD_A;
                         index <= 3'd0;
-                    end else begin
+                    end else if (index < 3'd3) begin
                         index <= index + 1'b1;
                     end
+                end
+                default: begin
+                    state <= LOAD_A;
+                    index <= 3'd0;
                 end
             endcase
         end
