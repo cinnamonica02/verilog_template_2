@@ -20,7 +20,7 @@ module tt_um_bjarke_micro_mac (
     reg [2:0] index;
     reg signed [7:0] a0, a1, a2, a3;
     reg signed [7:0] b0, b1, b2, b3;
-    reg signed [17:0] c0, c1, c2, c3;
+    reg signed [7:0] c0, c1, c2, c3;
     reg [7:0] output_value;
 
     assign uio_out = 8'b0;
@@ -31,10 +31,11 @@ module tt_um_bjarke_micro_mac (
         output_value = 8'b0;
         if (state == OUT) begin
             case (index)
-                3'd0: output_value = c0[7:0];
-                3'd1: output_value = c1[7:0];
-                3'd2: output_value = c2[7:0];
-                3'd3: output_value = c3[7:0];
+                3'd0: output_value = c0;
+                3'd1: output_value = c1;
+                3'd2: output_value = c2;
+                3'd3: output_value = c3;
+                default: output_value = 8'b0;
             endcase
         end
     end
@@ -100,18 +101,18 @@ module tt_um_bjarke_micro_mac (
         reg signed [15:0] product;
         begin
             product = a * b;
-            multiply = product;
+            multiply = {{2{product[15]}}, product};
         end
     endfunction
 
-    function signed [17:0] clamp(input signed [17:0] value);
+    function signed [7:0] clamp(input signed [17:0] value);
         begin
             if (value > 18'sd127)
-                clamp = 18'sd127;
+                clamp = 8'sd127;
             else if (value < -18'sd128)
-                clamp = -18'sd128;
+                clamp = -8'sd128;
             else
-                clamp = value;
+                clamp = value[7:0];
         end
     endfunction
 
