@@ -1,6 +1,6 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
 
-# Tiny Tapeout 2×2 INT8 MXU
+# Tiny Tapeout 2×2 INT8 Matrix multiply
 
 This project is a small open matrix execution unit  built for
 [Tiny Tapeout](https://tinytapeout.com/). It loads two 2×2 signed INT8 matrices, multiply
