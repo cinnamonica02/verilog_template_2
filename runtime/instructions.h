@@ -6,6 +6,7 @@
 namespace instruction {
 
 enum Opcode : std::uint8_t {
+    RESET = 0x00,
     LOAD_A = 0x01,
     LOAD_B = 0x02,
     EXECUTE = 0x03,

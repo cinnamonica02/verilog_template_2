@@ -54,18 +54,20 @@ void reset(Vtt_um_bjarke_micro_mac& dut, VerilatedVcdC& trace, vluint64_t& time)
     dut.rst_n = 1;
 }
 
-std::array<std::int8_t, 4> run_program(
+std::vector<std::int8_t> run_program(
     Vtt_um_bjarke_micro_mac& dut,
     VerilatedVcdC& trace,
     vluint64_t& time,
     const std::vector<Byte>& program) {
-    std::array<std::int8_t, 4> output{};
+    std::vector<std::int8_t> output;
     std::size_t pc = 0;
-    std::size_t output_index = 0;
 
     while (pc < program.size()) {
         const Byte opcode = program[pc++];
         switch (opcode) {
+            case instruction::RESET:
+                reset(dut, trace, time);
+                break;
             case instruction::LOAD_A:
             case instruction::LOAD_B:
                 if (pc >= program.size()) {
@@ -82,11 +84,7 @@ std::array<std::int8_t, 4> run_program(
                 }
                 break;
             case instruction::READ_OUT:
-                if (output_index >= output.size()) {
-                    std::cerr << "too many READ_OUT instructions\n";
-                    return {};
-                }
-                output[output_index++] = decode(static_cast<Byte>(dut.uo_out));
+                output.push_back(decode(static_cast<Byte>(dut.uo_out)));
                 tick(dut, trace, time);
                 break;
             default:
@@ -96,11 +94,6 @@ std::array<std::int8_t, 4> run_program(
         }
     }
 
-    if (output_index != output.size()) {
-        std::cerr << "program returned " << output_index
-                  << " outputs, expected " << output.size() << "\n";
-        return {};
-    }
     return output;
 }
 
@@ -123,19 +116,22 @@ int main(int argc, char** argv) {
     reset(*dut, trace, time);
 
     const char* program_file = argc > 1 ? argv[1] : "program.bin";
+    const char* expected_file = argc > 2 ? argv[2] : "expected.bin";
     const auto actual = run_program(*dut, trace, time, load_program(program_file));
-    const std::array<std::int8_t, 4> expected = {19, 22, 43, 50};
+    const auto expected_bytes = load_program(expected_file);
+    std::vector<std::int8_t> expected;
+    for (const Byte value : expected_bytes) {
+        expected.push_back(decode(value));
+    }
     trace.close();
 
     if (actual != expected) {
-        std::cerr << "MXU mismatch: [" << static_cast<int>(actual[0]) << ", "
-                  << static_cast<int>(actual[1]) << ", "
-                  << static_cast<int>(actual[2]) << ", "
-                  << static_cast<int>(actual[3]) << "]\n";
+        std::cerr << "MXU mismatch: got " << actual.size()
+                  << " outputs, expected " << expected.size() << "\n";
         return 1;
     }
 
-    std::cout << "MXU OK: [19, 22, 43, 50]\n";
+    std::cout << "MXU OK: " << actual.size() << " outputs across 3 cases\n";
     std::cout << "Waveform: mxu.vcd\n";
     return 0;
 }
