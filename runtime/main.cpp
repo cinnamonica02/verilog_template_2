@@ -5,8 +5,12 @@
 
 #include <array>
 #include <cstdint>
+#include <fstream>
 #include <iostream>
+#include <iterator>
 #include <memory>
+#include <stdexcept>
+#include <string>
 #include <vector>
 
 namespace {
@@ -19,6 +23,15 @@ Byte encode(std::int8_t value) {
 
 std::int8_t decode(Byte value) {
     return static_cast<std::int8_t>(value);
+}
+
+std::vector<Byte> load_program(const char* filename) {
+    std::ifstream file(filename, std::ios::binary);
+    if (!file) {
+        throw std::runtime_error(std::string("cannot open program: ") + filename);
+    }
+    return std::vector<Byte>(
+        std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 }
 
 void tick(Vtt_um_bjarke_micro_mac& dut, VerilatedVcdC& trace, vluint64_t& time) {
@@ -109,8 +122,8 @@ int main(int argc, char** argv) {
     vluint64_t time = 0;
     reset(*dut, trace, time);
 
-    const auto actual = run_program(
-        *dut, trace, time, instruction::matrix_program());
+    const char* program_file = argc > 1 ? argv[1] : "program.bin";
+    const auto actual = run_program(*dut, trace, time, load_program(program_file));
     const std::array<std::int8_t, 4> expected = {19, 22, 43, 50};
     trace.close();
 

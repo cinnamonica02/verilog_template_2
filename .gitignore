@@ -11,6 +11,8 @@ test/sim_build
 runtime/obj_dir
 runtime/Vtt_um_bjarke_micro_mac
 runtime/mxu.vcd
+runtime/program.bin
+runtime/__pycache__/
 test/__pycache__/
 test/results.xml
 test/gate_level_netlist.v

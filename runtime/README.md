@@ -12,8 +12,9 @@ The host instruction stream currently uses:
 0x04         READ_OUT
 ```
 
-The runtime interprets these instructions for now; the RTL does not decode
-them yet.
+`reference.py` computes the same 2x2 result in pure Python, checks it, and
+generates `runtime/program.bin`. The C++ runtime loads that stream and drives
+the RTL; the RTL does not decode the instruction bytes itself yet.
 
 With Verilator installed, run from the repository root:
 
@@ -22,7 +23,13 @@ make -C runtime run
 ```
 
 The Makefile builds the generated model under `runtime/obj_dir`, runs it, and
-writes `runtime/mxu.vcd`.
+writes `runtime/mxu.vcd`. It also runs the Python reference generator first.
+
+To run only the reference model:
+
+```sh
+python runtime/reference.py runtime/program.bin
+```
 To build without running:
 
 ```sh
