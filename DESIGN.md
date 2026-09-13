@@ -113,7 +113,7 @@ slice.
 1. Preserve the passing Tiny Tapeout baseline and top-level interface.
 2. Define the 2x2 INT8 MXU and instruction/memory contract.
 3. Implement the functional MXU RTL and waveform tests.
-4. Build the Verilator C++ harness and instruction runner.
+4. Build the Verilator C++ harness and instruction runner. [done: `runtime/main.cpp`]
 5. Add the first VLIW instruction format for load and MXU execution.
 6. Lower one JAX operation through HLO/MLIR into those instructions.
 7. Add the PJRT runtime path.

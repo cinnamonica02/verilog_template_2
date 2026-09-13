@@ -47,3 +47,16 @@ jobs:
             test/tb.fst
             test/results.xml
             test/output/*
+
+  verilator-runtime:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+
+      - name: Install Verilator
+        shell: bash
+        run: sudo apt-get update && sudo apt-get install -y verilator
+
+      - name: Run Verilator C++ runtime
+        run: make -C runtime run
