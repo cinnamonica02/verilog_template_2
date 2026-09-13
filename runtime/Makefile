@@ -7,7 +7,7 @@ EXECUTABLE = $(BUILD_DIR)/V$(TOP)
 
 all: $(EXECUTABLE)
 
-$(EXECUTABLE): ../src/project.v main.cpp
+$(EXECUTABLE): ../src/project.v main.cpp instructions.h
 	$(VERILATOR) --cc --exe --build \
 		--trace \
 		--top-module $(TOP) \

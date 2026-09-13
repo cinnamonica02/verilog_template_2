@@ -114,6 +114,6 @@ slice.
 2. Define the 2x2 INT8 MXU and instruction/memory contract.
 3. Implement the functional MXU RTL and waveform tests.
 4. Build the Verilator C++ harness and instruction runner. [done: `runtime/main.cpp`]
-5. Add the first VLIW instruction format for load and MXU execution.
+5. Add the first host instruction format for load and MXU execution. [done: `runtime/instructions.h`]
 6. Lower one JAX operation through HLO/MLIR into those instructions.
 7. Add the PJRT runtime path.

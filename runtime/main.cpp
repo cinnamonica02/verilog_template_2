@@ -1,6 +1,7 @@
 #include "Vtt_um_bjarke_micro_mac.h"
 #include "verilated.h"
 #include "verilated_vcd_c.h"
+#include "instructions.h"
 
 #include <array>
 #include <cstdint>
@@ -11,13 +12,6 @@
 namespace {
 
 using Byte = std::uint8_t;
-
-enum class Opcode { LoadA, LoadB, Execute, ReadOut };
-
-struct Command {
-    Opcode opcode;
-    std::int8_t value = 0;
-};
 
 Byte encode(std::int8_t value) {
     return static_cast<Byte>(value);
@@ -51,46 +45,50 @@ std::array<std::int8_t, 4> run_program(
     Vtt_um_bjarke_micro_mac& dut,
     VerilatedVcdC& trace,
     vluint64_t& time,
-    const std::vector<Command>& program) {
+    const std::vector<Byte>& program) {
     std::array<std::int8_t, 4> output{};
+    std::size_t pc = 0;
     std::size_t output_index = 0;
 
-    for (const auto command : program) {
-        switch (command.opcode) {
-            case Opcode::LoadA:
-            case Opcode::LoadB:
-                dut.ui_in = encode(command.value);
+    while (pc < program.size()) {
+        const Byte opcode = program[pc++];
+        switch (opcode) {
+            case instruction::LOAD_A:
+            case instruction::LOAD_B:
+                if (pc >= program.size()) {
+                    std::cerr << "truncated load instruction\n";
+                    return {};
+                }
+                dut.ui_in = program[pc++];
                 tick(dut, trace, time);
                 break;
-            case Opcode::Execute:
+            case instruction::EXECUTE:
                 dut.ui_in = 0;
                 for (int i = 0; i < 8; ++i) {
                     tick(dut, trace, time);
                 }
                 break;
-            case Opcode::ReadOut:
+            case instruction::READ_OUT:
                 if (output_index >= output.size()) {
-                    std::cerr << "too many READ_OUT commands\n";
+                    std::cerr << "too many READ_OUT instructions\n";
                     return {};
                 }
                 output[output_index++] = decode(static_cast<Byte>(dut.uo_out));
                 tick(dut, trace, time);
                 break;
+            default:
+                std::cerr << "unknown opcode 0x" << std::hex
+                          << static_cast<int>(opcode) << std::dec << "\n";
+                return {};
         }
     }
-    return output;
-}
 
-std::vector<Command> matrix_program() {
-    return {
-        {Opcode::LoadA, 1}, {Opcode::LoadA, 2},
-        {Opcode::LoadA, 3}, {Opcode::LoadA, 4},
-        {Opcode::LoadB, 5}, {Opcode::LoadB, 6},
-        {Opcode::LoadB, 7}, {Opcode::LoadB, 8},
-        {Opcode::Execute},
-        {Opcode::ReadOut}, {Opcode::ReadOut},
-        {Opcode::ReadOut}, {Opcode::ReadOut},
-    };
+    if (output_index != output.size()) {
+        std::cerr << "program returned " << output_index
+                  << " outputs, expected " << output.size() << "\n";
+        return {};
+    }
+    return output;
 }
 
 }  // namespace
@@ -111,7 +109,8 @@ int main(int argc, char** argv) {
     vluint64_t time = 0;
     reset(*dut, trace, time);
 
-    const auto actual = run_program(*dut, trace, time, matrix_program());
+    const auto actual = run_program(
+        *dut, trace, time, instruction::matrix_program());
     const std::array<std::int8_t, 4> expected = {19, 22, 43, 50};
     trace.close();
 
@@ -124,6 +123,6 @@ int main(int argc, char** argv) {
     }
 
     std::cout << "MXU OK: [19, 22, 43, 50]\n";
-    std::cout << "Waveform: runtime/mxu.vcd\n";
+    std::cout << "Waveform: mxu.vcd\n";
     return 0;
 }
