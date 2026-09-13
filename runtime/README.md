@@ -9,7 +9,8 @@ With Verilator installed, run from the repository root:
 make -C runtime run
 ```
 
-The Makefile builds the generated model under `runtime/obj_dir` and runs it.
+The Makefile builds the generated model under `runtime/obj_dir`, runs it, and
+writes `runtime/mxu.vcd`.
 To build without running:
 
 ```sh
@@ -20,4 +21,5 @@ Expected output:
 
 ```text
 MXU OK: [19, 22, 43, 50]
+Waveform: runtime/mxu.vcd
 ```

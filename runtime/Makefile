@@ -9,6 +9,7 @@ all: $(EXECUTABLE)
 
 $(EXECUTABLE): ../src/project.v main.cpp
 	$(VERILATOR) --cc --exe --build \
+		--trace \
 		--top-module $(TOP) \
 		--Mdir $(BUILD_DIR) \
 		../src/project.v main.cpp

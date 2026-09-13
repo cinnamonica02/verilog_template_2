@@ -60,3 +60,9 @@ jobs:
 
       - name: Run Verilator C++ runtime
         run: make -C runtime run
+
+      - name: Upload runtime waveform
+        uses: actions/upload-artifact@v7
+        with:
+          name: verilator-mxu-waveform
+          path: runtime/mxu.vcd
