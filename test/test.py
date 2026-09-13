@@ -24,7 +24,7 @@ async def test_project(dut):
             await ClockCycles(dut.clk, 1)
             await Timer(1, unit="ns")
 
-        await ClockCycles(dut.clk, 1)
+        await ClockCycles(dut.clk, 8)
         await Timer(1, unit="ns")
 
         for value in expected:
