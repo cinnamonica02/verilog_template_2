@@ -13,6 +13,7 @@ runtime/Vtt_um_bjarke_micro_mac
 runtime/mxu.vcd
 runtime/program.bin
 runtime/expected.bin
+runtime/custom_*.bin
 runtime/__pycache__/
 test/__pycache__/
 test/results.xml

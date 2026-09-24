@@ -131,7 +131,8 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    std::cout << "MXU OK: " << actual.size() << " outputs across 3 cases\n";
+    std::cout << "MXU OK: " << actual.size()
+              << " outputs across " << expected.size() / 4 << " cases\n";
     std::cout << "Waveform: mxu.vcd\n";
     return 0;
 }

@@ -19,6 +19,14 @@ generates `runtime/program.bin` plus `runtime/expected.bin`. The C++ runtime
 loads both files and drives the RTL; the RTL does not decode the instruction
 bytes itself yet.
 
+Custom 2x2 matrices can be generated without extra dependencies:
+
+```sh
+python runtime/reference.py custom.bin custom.expected \
+  --a 127 127 -128 127 \
+  --b 127 127 127 127
+```
+
 With Verilator installed, run from the repository root:
 
 ```sh

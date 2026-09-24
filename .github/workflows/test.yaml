@@ -61,6 +61,14 @@ jobs:
       - name: Run Verilator C++ runtime
         run: make -C runtime run
 
+      - name: Run custom signed and saturation case
+        run: |
+          python3 runtime/reference.py runtime/custom_program.bin runtime/custom_expected.bin \
+            --a 127 127 -128 127 \
+            --b 127 127 127 127
+          runtime/obj_dir/Vtt_um_bjarke_micro_mac \
+            runtime/custom_program.bin runtime/custom_expected.bin
+
       - name: Upload runtime waveform
         uses: actions/upload-artifact@v7
         with:
