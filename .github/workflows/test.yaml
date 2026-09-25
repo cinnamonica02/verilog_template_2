@@ -69,6 +69,9 @@ jobs:
           runtime/obj_dir/Vtt_um_bjarke_micro_mac \
             runtime/custom_program.bin runtime/custom_expected.bin
 
+      - name: Run TinyTransformer MXU demo
+        run: make -C runtime transformer
+
       - name: Upload runtime waveform
         uses: actions/upload-artifact@v7
         with:

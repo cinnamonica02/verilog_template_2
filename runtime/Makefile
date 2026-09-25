@@ -5,8 +5,10 @@ BUILD_DIR ?= obj_dir
 EXECUTABLE = $(BUILD_DIR)/V$(TOP)
 PROGRAM = program.bin
 EXPECTED = expected.bin
+TRANSFORMER_PROGRAM = transformer.bin
+TRANSFORMER_EXPECTED = transformer.expected
 
-.PHONY: all run reference clean
+.PHONY: all run reference transformer clean
 
 all: $(EXECUTABLE) $(PROGRAM) $(EXPECTED)
 
@@ -25,5 +27,11 @@ reference: $(PROGRAM)
 run: all
 	$(EXECUTABLE) $(PROGRAM) $(EXPECTED)
 
+$(TRANSFORMER_PROGRAM) $(TRANSFORMER_EXPECTED): tiny_transformer.py reference.py
+	$(PYTHON) tiny_transformer.py $(TRANSFORMER_PROGRAM) $(TRANSFORMER_EXPECTED)
+
+transformer: $(EXECUTABLE) $(TRANSFORMER_PROGRAM) $(TRANSFORMER_EXPECTED)
+	$(EXECUTABLE) $(TRANSFORMER_PROGRAM) $(TRANSFORMER_EXPECTED)
+
 clean:
-	$(RM) -r $(BUILD_DIR) $(PROGRAM) $(EXPECTED) mxu.vcd
+	$(RM) -r $(BUILD_DIR) $(PROGRAM) $(EXPECTED) $(TRANSFORMER_PROGRAM) $(TRANSFORMER_EXPECTED) mxu.vcd

@@ -54,3 +54,13 @@ Reference OK: 3 cases, outputs=[[19, 22, 43, 50], [9, 22, 13, 50], [127, 127, 12
 MXU OK: 12 outputs across 3 cases
 Waveform: runtime/mxu.vcd
 ```
+
+Run the TinyTransformer attention demo:
+
+```sh
+make -C runtime transformer
+```
+
+This compiles six tiled MXU operations: Q, K, and V projections, `Q × Kᵀ`,
+attention/value multiplication, and output projection. Softmax is computed in
+the Python reference and quantized before the attention/value operation.
