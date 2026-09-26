@@ -22,7 +22,7 @@ bytes itself yet.
 Custom 2x2 matrices can be generated without extra dependencies:
 
 ```sh
-python runtime/reference.py custom.bin custom.expected \
+python3 runtime/reference.py custom.bin custom.expected \
   --a 127 127 -128 127 \
   --b 127 127 127 127
 ```
@@ -39,7 +39,7 @@ writes `runtime/mxu.vcd`. It also runs the Python reference generator first.
 To run only the reference model:
 
 ```sh
-python runtime/reference.py runtime/program.bin runtime/expected.bin
+python3 runtime/reference.py runtime/program.bin runtime/expected.bin
 ```
 To build without running:
 
