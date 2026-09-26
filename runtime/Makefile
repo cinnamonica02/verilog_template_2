@@ -1,5 +1,5 @@
 VERILATOR ?= verilator
-PYTHON ?= python
+PYTHON ?= python3
 TOP ?= tt_um_bjarke_micro_mac
 BUILD_DIR ?= obj_dir
 EXECUTABLE = $(BUILD_DIR)/V$(TOP)
